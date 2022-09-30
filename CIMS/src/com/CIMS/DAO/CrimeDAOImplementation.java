@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.CIMS.DButil.DButil;
 import com.CIMS.DTO.CrimesOfCriminalDTO;
 import com.CIMS.Exception.CrimeException;
 import com.CIMS.bean.Crime;
@@ -19,7 +20,7 @@ public class CrimeDAOImplementation implements CrimeDAO{
 	public List<Crime> getAllCrimes()throws CrimeException{
 		List<Crime> crimes = new ArrayList<>();
 		
-		try(Connection conn = ConnectionClass.getConnection()){
+		try(Connection conn=DButil.ProvideConnection()){
 			PreparedStatement st = conn.prepareStatement("select * from crime");
 			ResultSet rs =  st.executeQuery();
 			while(rs.next()) {

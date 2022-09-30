@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.CIMS.DButil.DButil;
 import com.CIMS.DTO.VictimsOfCrimeDTO;
 import com.CIMS.Exception.VictimException;
 import com.CIMS.util.ConnectionClass;
@@ -18,7 +19,7 @@ public class VictimDAOImplementation implements VictimDAO{
 		// TODO Auto-generated method stub
 		List<VictimsOfCrimeDTO> victims = new ArrayList<>();
 		
-		try(Connection conn = ConnectionClass.getConnection()){
+		try(Connection conn=DButil.ProvideConnection()){
 			
 			PreparedStatement ps =  conn.prepareStatement("select v.name, v.age, v.gender, v.address, c.description from victimsofcrime vc inner join crime c inner join victim v on vc.victimid = v.victimid and c.crimeid = vc.crimeid where c.crimeid = ?;");
 			ps.setInt(1, crimeId);

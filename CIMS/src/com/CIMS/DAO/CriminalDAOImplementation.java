@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.CIMS.DButil.DButil;
 import com.CIMS.DTO.CriminalArrestedBeforeDTO;
 import com.CIMS.DTO.CriminalsOfCrimeDTO;
 import com.CIMS.Exception.CriminalException;
@@ -47,7 +48,7 @@ public class CriminalDAOImplementation implements CriminalDAO{
 		// TODO Auto-generated method stub
 		List<CriminalArrestedBeforeDTO> criminals = new ArrayList<>();
 		
-		try(Connection conn = ConnectionClass.getConnection()){
+		try(Connection conn=DButil.ProvideConnection()){    
 			PreparedStatement ps =  conn.prepareStatement("select name, age, gender, address, mark, policestationname from criminal cr inner join police_station ps on cr.policestationfirstarrestedid = ps.policestationid;");
 			ResultSet rs =  ps.executeQuery();
 			while(rs.next()) {
