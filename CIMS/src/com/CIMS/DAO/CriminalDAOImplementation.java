@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.CIMS.DButil.DButil;
 import com.CIMS.DTO.CriminalArrestedBeforeDTO;
 import com.CIMS.DTO.CriminalsOfCrimeDTO;
 import com.CIMS.Exception.CriminalException;
@@ -31,7 +30,7 @@ public class CriminalDAOImplementation implements CriminalDAO{
 				String gender = rs.getString("gender");
 				String address = rs.getString("address");
 				String mark = rs.getString("mark");
-				int policeStationId = rs.getInt("policestationfirstarrestedid");
+				int policeStationId = rs.getInt(" policeStationFirstArrested");
 				criminals.add(new Criminal(name, age, gender, address, mark, policeStationId));
 			}
 			if(criminals.size()==0)
@@ -48,8 +47,8 @@ public class CriminalDAOImplementation implements CriminalDAO{
 		// TODO Auto-generated method stub
 		List<CriminalArrestedBeforeDTO> criminals = new ArrayList<>();
 		
-		try(Connection conn=DButil.ProvideConnection()){    
-			PreparedStatement ps =  conn.prepareStatement("select name, age, gender, address, mark, policestationname from criminal cr inner join police_station ps on cr.policestationfirstarrestedid = ps.policestationid;");
+		try(Connection conn = ConnectionClass.getConnection()){
+			PreparedStatement ps =  conn.prepareStatement("select name, age, gender, address, mark, policestationname from criminal cr inner join police_station ps on cr. policeStationFirstArrested = ps.policestationid;");
 			ResultSet rs =  ps.executeQuery();
 			while(rs.next()) {
 				String name = rs.getString("name");
@@ -93,6 +92,38 @@ public class CriminalDAOImplementation implements CriminalDAO{
 			throw new CriminalException(e.getMessage());
 		}
 		return criminals;
+	}
+
+	@Override
+	public int addACriminal(Criminal criminal) throws CriminalException {
+		int x = 0;
+		
+		try(Connection conn = ConnectionClass.getConnection()){
+			PreparedStatement ps = null;
+			if(criminal.getPoliceStationFirstArrested()!=0) {
+				ps = conn.prepareStatement("insert into criminal(name, age, gender, address, mark,  policeStationFirstArrested) values(?, ?, ?, ?, ?, ?);");
+				ps.setString(1, criminal.getName());
+				ps.setInt(2, criminal.getAge());
+				ps.setString(3, criminal.getGender());
+				ps.setString(4, criminal.getAddress());
+				ps.setString(5, criminal.getMark());
+				ps.setInt(6, criminal.getPoliceStationFirstArrested());
+			}
+			else {
+				ps = conn.prepareStatement("insert into criminal(name, age, gender, address, mark) values(?, ?, ?, ?, ?);");
+				ps.setString(1, criminal.getName());
+				ps.setInt(2, criminal.getAge());
+				ps.setString(3, criminal.getGender());
+				ps.setString(4, criminal.getAddress());
+				ps.setString(5, criminal.getMark());
+			}			
+			x = ps.executeUpdate();
+			if(x==0)
+				throw new CriminalException("Criminal not inserted..");
+		}catch(SQLException e) {
+			throw new CriminalException(e.getMessage());
+		}
+		return x;
 	}
 	
 	
